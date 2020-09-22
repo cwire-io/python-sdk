@@ -1,6 +1,7 @@
 # Editors
 .vscode/
 .idea/
+python-sdk.iml
 
 # Vagrant
 .vagrant/
