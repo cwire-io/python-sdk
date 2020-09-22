@@ -1,32 +1,33 @@
 from typing import Sequence
 
 
-class data_model_action_options:
-    def __init__(self, action_type):
+class DataModelActionOptions:
+    def __init__(self, name, action_type):
+        self.name = name
         self.type = action_type
 
 
-class data_model_action:
-    def __init__(self, name: str, options: data_model_action_options):
+class DataModelAction:
+    def __init__(self, name: str, options: DataModelActionOptions):
         self.name = name
         self.type = options.type
 
 
-class data_model_field_options:
+class DataModelFieldOptions:
     def __init__(self, field_type):
         self.type = field_type
 
 
-class data_model_field:
-    def __init__(self, name: str, options: data_model_field_options):
+class DataModelField:
+    def __init__(self, name: str, options: DataModelFieldOptions):
         self.name = name
         self.type = options.type
 
 
-class data_model_options:
+class DataModelOptions:
     def __init__(self, is_editable: bool = None, is_creatable: bool = None, is_deletable: bool = None, on_delete=None,
-                 on_change=None, on_create=None, fields: Sequence[data_model_field] = None,
-                 actions: Sequence[data_model_action_options] = None):
+                 on_change=None, on_create=None, fields: Sequence[DataModelField] = None,
+                 actions: Sequence[DataModelActionOptions] = None):
         self.is_editable = is_editable
         self.is_creatable = is_creatable
         self.is_deletable = is_deletable
@@ -39,8 +40,8 @@ class data_model_options:
 
 # fields: Mapping[str, data_model_field],
 # actions: Mapping[str, data_model_action]
-class data_model:
-    def __init__(self, name: str, identifier: str, options: data_model_options):
+class DataModel:
+    def __init__(self, name: str, identifier: str, options: DataModelOptions):
         self.name = name
         self.id = identifier
         self.options = options
@@ -55,15 +56,15 @@ class data_model:
                 self.actions.append([action.name, action.type])
 
 
-class cwire_options:
-    def __init__(self, route: str, api_url: str, models: Sequence[data_model]):
+class CwireOptions:
+    def __init__(self, route: str, api_url: str, models: Sequence[DataModel]):
         self.route = route
         self.api_url = api_url
         self.models = models
 
 
-class cwire:
-    def __init__(self, api_key: str, options: cwire_options):
+class Cwire:
+    def __init__(self, api_key: str, options: CwireOptions):
         self.api_key = api_key
 
         if options.api_url:
