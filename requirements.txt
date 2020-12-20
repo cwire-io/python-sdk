@@ -1,2 +1,5 @@
 asyncio==3.4.3
 websockets==8.1
+python-socketio[client]==5.0.3
+requests==2.25.1
+websocket-client==0.57.0

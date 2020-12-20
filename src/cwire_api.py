@@ -1,43 +1,20 @@
-from typing import Sequence
-
-from src.cwire import DataModel
-
-
-class BaseApi:
-    def __init__(self, cwire, api):
-        self.cwire = cwire
-        self.api = api
-
-    @staticmethod
-    def get_service_data(res):
-        # TODO
-        return res.data.data
-
-
-class DataModelApi(BaseApi):
-    async def create(self):
-        await self.clear_all_data_models()
-        await self.sync_models()
-
-    async def clear_all_data_models(self):
-        return self.api.post("/models/clear")
-
-    async def sync_models(self, models: Sequence[DataModel]):
-        # TODO
-        pass
-
-    async def get_all_data_models(self):
-        return self.api.get("/models")
-
-
-class TunnelApi(BaseApi):
-    async def create_tunnel(self):
-        return await BaseApi.get_service_data(self.api.post("/tunnels"))
+from src.api.datamodel_api import DataModelApi
+from src.api.worker_api import WorkerApi
 
 
 class CwireApi:
-    def __init__(self, api, cwire, tunnel_api, data_model_api):
-        self.api = api
+    def __init__(self, cwire, socket):
+        self.api = socket
         self.cwire = cwire
-        self.tunnel_api = tunnel_api
-        self.data_model_api = data_model_api
+        self.worker_api = WorkerApi(cwire, socket)
+        self.data_model_api = DataModelApi(cwire, socket)
+
+    async def create(self):
+        try:
+            await self.worker_api.create()
+            await self.data_model_api.create()
+        except Exception as e:
+            print("API initialising failed {message}".format(message=e))
+
+    def get_socket(self):
+        return self.api

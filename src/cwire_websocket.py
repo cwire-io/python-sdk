@@ -1,12 +1,22 @@
+import socketio
+
+from src.cwire import Cwire
+
+
 class CwireWebSocket:
-    def __init__(self, cwire, socket):
+    socket: socketio.AsyncClient = None
+
+    def __init__(self, cwire: Cwire):
         self.cwire = cwire
-        self.socket = socket
 
     def disconnect(self):
-        pass
+        if self.socket:
+            return
+
+        self.socket.disconnect()
 
     def connect(self):
-        pass
+        self.socket = socketio.AsyncClient().connect(
+            url=self.cwire.api_url,
 
-# https://websockets.readthedocs.io/en/stable/intro.html
+        )

@@ -1,5 +1,12 @@
 from typing import Sequence
 
+import socketio
+
+from src.cwire_api import CwireApi
+from src.cwire_websocket import CwireWebSocket
+from src.data_model_field import DataModelField
+from src.worker.functions import WorkerFunctions
+
 
 class DataModelActionOptions:
     def __init__(self, name, action_type):
@@ -7,21 +14,9 @@ class DataModelActionOptions:
         self.type = action_type
 
 
-class DataModelAction:
-    def __init__(self, name: str, options: DataModelActionOptions):
-        self.name = name
-        self.type = options.type
-
-
 class DataModelFieldOptions:
     def __init__(self, field_type):
         self.type = field_type
-
-
-class DataModelField:
-    def __init__(self, name: str, options: DataModelFieldOptions):
-        self.name = name
-        self.type = options.type
 
 
 class DataModelOptions:
@@ -38,34 +33,38 @@ class DataModelOptions:
         self.actions = actions
 
 
-# fields: Mapping[str, data_model_field],
-# actions: Mapping[str, data_model_action]
-class DataModel:
-    def __init__(self, name: str, identifier: str, options: DataModelOptions):
-        self.name = name
-        self.id = identifier
-        self.options = options
-        self.fields = []
-        self.actions = []
-
-        if options.fields:
-            for field in options.fields:
-                self.fields.append([field.name, field.type])
-        if options.actions:
-            for action in options.actions:
-                self.actions.append([action.name, action.type])
-
-
 class CwireOptions:
-    def __init__(self, route: str, api_url: str, models: Sequence[DataModel]):
+    def __init__(self, route: str = None, api_url: str = None, models: DataModel = None):
         self.route = route
         self.api_url = api_url
         self.models = models
 
 
 class Cwire:
-    def __init__(self, api_key: str, options: CwireOptions):
-        self.api_key = api_key
+    api_url: str
+    CWIRE_ROUTE = '/cwire'
+    CWIRE_API_URL = 'https://api.cwire.io'
 
-        if options.api_url:
-            self.cwire_api_url = options.api_url
+    def __init__(self, api_key: str, **kwargs):
+        self.api_key = api_key
+        self.api_url = kwargs.get('api_url')
+        self.route = kwargs.get('route')
+        self.models = kwargs.get('models')
+        self.worker = WorkerFunctions.create(self)
+        self.websocket = CwireWebSocket(self)
+        self.api = CwireApi(self, socketio.AsyncClient())
+        self.instance = None
+
+    async def create(self, api_key, options):
+        if self.instance is None:
+            try:
+                self.instance = Cwire(api_key, options)
+                await self.instance.api.create()
+                await self.instance.websocket.connect()
+            except Exception as e:
+                print("API initialising failed {message}".format(message=e))
+                self.instance.websocket.disconnect()
+                del self.instance
+                self.instance = None
+
+        return self.instance
