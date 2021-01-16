@@ -2,13 +2,22 @@ from src.api.base_api import BaseApi
 from src.helper.api import parse_response
 
 
+# Singleton
 class WorkerApi(BaseApi):
-    @classmethod
-    async def create(self):
-        self.cwire.set_worker(await self.get_worker_info())
+    _instance = None
 
-    async def get_worker_info(self):
+    def __new__(cls, **kwargs):
+        if cls._instance is None:
+            cls._instance = super(WorkerApi, cls).__new__(cls)
+        return cls._instance
+
+    async def create(cls):
+        cls._instance.cwire.worker(await cls.get_worker_info())
+
+    @classmethod
+    async def get_worker_info(cls):
         try:
-            return parse_response(await self.api.get("/auth/api-clients/me"))
+            # TODO get api url from cwire instance
+            return parse_response(await cls._instance.api.get("https://api.cwire.io" + "/auth/api-clients/me"))
         except Exception as e:
             print("Worker not found {message}".format(message=e))

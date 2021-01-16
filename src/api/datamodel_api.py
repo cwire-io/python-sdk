@@ -1,7 +1,7 @@
 from typing import Sequence
 
 from src.api.base_api import BaseApi
-from src.cwire import DataModel
+from src.data_model import DataModel
 
 
 class DataModelApi(BaseApi):
@@ -9,7 +9,7 @@ class DataModelApi(BaseApi):
         await self.clear_all_data_models()
         await self.sync_models(self.cwire.get_data_model_list())
 
-    async def sync_models(self, models: Sequence[DataModel]):
+    async def sync_models(self, models: Sequence[DataModel]) -> list:
         responses = []
         for model in models:
             responses.append(self.api.post('/models', model.to_json(())))
