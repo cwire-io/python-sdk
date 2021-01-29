@@ -21,14 +21,14 @@ class Cwire(object):
             cls.worker = None
         return cls._instance
 
-    async def create(cls):
+    def create(cls):
         if cls._instance:
             try:
-                await cls._instance.api.create()
-                await cls._instance.websocket.connect()
+                cls._instance.api.create()
+                cls._instance.websocket.connect()
             except Exception as e:
                 print("API initialising failed {message}".format(message=e))
-                await cls._instance.websocket.disconnect()
+                cls._instance.websocket.disconnect()
                 del cls._instance
                 cls._instance = None
             return cls._instance

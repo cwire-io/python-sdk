@@ -3,19 +3,19 @@ import socketio
 
 
 class CwireWebSocket:
-    sio: socketio.AsyncClient = None
+    sio: socketio.Client = None
 
     def __init__(self, cwire):
         self.cwire = cwire
-        self.sio = socketio.AsyncClient(logger=True, engineio_logger=True)
+        self.sio = socketio.Client(logger=True, engineio_logger=True)
 
-    async def disconnect(self):
+    def disconnect(self):
         if not self.sio:
             return
-        await self.sio.disconnect()
+        self.sio.disconnect()
 
-    async def connect(self):
-        await self.sio.connect(
+    def connect(self):
+        self.sio.connect(
             url=self.cwire.api_url,
             headers={
                 "x-access-token": self.cwire.api_key
@@ -25,7 +25,7 @@ class CwireWebSocket:
         print('my sid is', self.sio.sid)
         self.init_listeners()
 
-    async def on_worker_function_called(self):
+    def on_worker_function_called(self):
         pass
 
     def get_worker_functions(self):

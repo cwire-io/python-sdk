@@ -1,12 +1,12 @@
-from src.cwire import DataModelActionOptions
+from src.data_model import DataModelActionOptions
 
 
 class DataModelAction:
-    def __init__(self, name: str, options: DataModelActionOptions):
+    def __init__(self, name: str, options: DataModelActionOptions) -> None:
         self.name = name
         self.type = options.type
 
-    def to_json(self):
+    def to_json(self) -> {str, DataModelActionOptions}:
         return {
             self.name,
             self.type

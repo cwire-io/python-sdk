@@ -19,9 +19,9 @@ class CwireApi(object):
             # cls.data_model_api = DataModelApi(cwire, session)
         return cls._instance
 
-    async def create(cls):
+    def create(cls):
         try:
-            await cls.worker_api.create()
+            cls.worker_api.create()
             # await self.data_model_api.create()
         except Exception as e:
             print("API initialising failed {message}".format(message=e))

@@ -11,13 +11,13 @@ class WorkerApi(BaseApi):
             cls._instance = super(WorkerApi, cls).__new__(cls)
         return cls._instance
 
-    async def create(cls):
-        cls._instance.cwire.worker(await cls.get_worker_info())
+    def create(cls):
+        cls._instance.cwire.worker(cls.get_worker_info())
 
     @classmethod
-    async def get_worker_info(cls):
+    def get_worker_info(cls):
         try:
             # TODO get api url from cwire instance
-            return parse_response(await cls._instance.api.get("https://api.cwire.io" + "/auth/api-clients/me"))
+            return parse_response(cls._instance.api.get("https://api.cwire.io" + "/auth/api-clients/me"))
         except Exception as e:
             print("Worker not found {message}".format(message=e))

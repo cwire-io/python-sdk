@@ -1,11 +1,8 @@
-from src.cwire import DataModelFieldOptions
-
-
 class DataModelField:
-    def __init__(self, name: str, options: DataModelFieldOptions):
+    def __init__(self, name: str, options):
         self.__name: str = name
-        # TODO self.__is_primary: bool = options.
-        self.__type: DataModelFieldOptions = options.type
+        self.__is_primary: bool = options.is_primary
+        self.__type = options.type
 
     def to_json(self):
         return {
